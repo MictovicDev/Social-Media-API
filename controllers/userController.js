@@ -53,17 +53,18 @@ const loginUser = async(req, res) =>{
     const user = await User.findOne({username});
     const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
     console.log(isPasswordCorrect)
-    // if (user and )
-    if(!user || isPasswordCorrect) return res.status(400).json({message: "Invalid username or password"})
-    
-    generateTokenAndSetCookie(user._id, res);
-
-    return res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      username: user.username,
-    });
+    if (user && isPasswordCorrect){
+      generateTokenAndSetCookie(user._id, res);
+      return res.status(200).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+      });
+    }
+    else{
+      return res.status(400).json({message: "Invalid username or password"})
+    }
   }
   catch(error){
 
@@ -72,7 +73,7 @@ const loginUser = async(req, res) =>{
 
 const logoutUser = (req, res)=> {
      try{
-       res.cookies("jwt", "",{maxAge:1});
+       res.cookie("jwt", "",{maxAge:1});
        res.status(200).json({message: "User logged out successfully"})
      }catch (error){
         res.status(500).json({message: error.message});
@@ -81,4 +82,16 @@ const logoutUser = (req, res)=> {
 };
 
 
-export { signupUser, loginUser, logoutUser }; 
+const followUnfollowUser = async  (req, res) =>{
+       try{
+         const {id} = req.params;
+         
+       }
+       catch (error){
+        res.status(500).json({message: error.message});
+        console.log("Error in Following User: ", error.message)
+       }
+}
+
+
+export { signupUser, loginUser, logoutUser, followUnfollowUser }; 
