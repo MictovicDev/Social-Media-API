@@ -47,8 +47,23 @@ const  signupUser = async(req, res) => {
 }
 
 
+function getAllProperties(obj) {
+  const properties = new Set();
+  while (obj) {
+      Object.getOwnPropertyNames(obj).forEach(prop => properties.add(prop));
+      obj = Object.getPrototypeOf(obj);
+  }
+  return [...properties];
+}
+
+
 const loginUser = async(req, res) =>{
   try{
+    // console.log(dir(User));
+    // console.log(Object.keys(req))
+    // console.log(getAllProperties(req))
+    // console.log(JSON.stringify(getAllProperties(req), null, 2));
+    // console.dir(req);
     const {username, password} = req.body;
     const user = await User.findOne({username});
     const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
@@ -82,10 +97,24 @@ const logoutUser = (req, res)=> {
 };
 
 
-const followUnfollowUser = async  (req, res) =>{
+const followUnfollowUser = async (req, res) =>{
        try{
          const {id} = req.params;
-         
+         const userToFollow = await User.findById(id);
+         const currentUser = await User.findById(req.user._id);
+         if(id == req.user._id) return res.status(400).json({message: "You cannot follow/unfollow yourself"});
+         if(!userToFollow || !currentUser) return res.status(400).json({message: "User not Found"});
+         const isFollowing = currentUser.following.include(id);
+
+         if(isFollowing){
+           //unfollow user
+           await user.findByAndUpdate(req.user._id, {$pull: {following: id}});
+           await user.findByAndUpdate(id, {$pull: {follower: req.user._id}});
+         }
+         else{
+          await user.findByAndUpdate(req.user._id, {$push: {following: id}});
+          await user.findByAndUpdate(id, {$pull: {follower: req.user._id}});
+         }
        }
        catch (error){
         res.status(500).json({message: error.message});
