@@ -1,3 +1,6 @@
+import User from "../models/userModel.js";
+import jwt from "jsonwebtoken";
+
 const protectRoute = async (req, res, next) =>{
        try{
          const token = req.cookies.jwt;
@@ -8,7 +11,7 @@ const protectRoute = async (req, res, next) =>{
          next();
        } catch(error){
             res.status(500).json({message: error.message});
-            console.log("Error in protectRoute:", error.messge);
+            console.log("Error in protectRoute:", error.message);
        }
 
 }
