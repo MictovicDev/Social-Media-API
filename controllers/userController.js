@@ -121,8 +121,18 @@ const followUnfollowUser = async (req, res) =>{
        catch (error){
         res.status(500).json({message: error.message});
         console.log("Error in Following User: ", error.message)
-       }
+      }
+}
+
+const updateUser = async (req, res) =>{
+     try{
+        const {name, email, username, password} = req.body
+     }
+     catch (error){
+         res.status(500).json({message: error.message})
+         console.log("Error in Updating User:", error.message)
+     }
 }
 
 
-export { signupUser, loginUser, logoutUser, followUnfollowUser }; 
+export { signupUser, loginUser, logoutUser, followUnfollowUser, updateUser }; 
